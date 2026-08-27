@@ -1,6 +1,7 @@
 import './App.css'
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
+import SummaryCard from './components/SummaryCard'
 
 function App() {
   return (
@@ -10,9 +11,31 @@ function App() {
       <main className="main-content">
         <Header />
 
-        <section className="dashboard">
-          <h2>Welcome to Finance Tracker</h2>
-          <p>Your financial overview will appear here.</p>
+        <section className="summary-grid">
+          <SummaryCard
+            title="Total Income"
+            amount="₹50,000"
+          />
+
+          <SummaryCard
+            title="Total Expenses"
+            amount="₹32,000"
+          />
+
+          <SummaryCard
+            title="Balance"
+            amount="₹18,000"
+          />
+
+          <SummaryCard
+            title="Savings"
+            amount="₹18,000"
+          />
+
+          <SummaryCard
+            title="Savings Rate"
+            amount="36%"
+          />
         </section>
       </main>
     </div>
