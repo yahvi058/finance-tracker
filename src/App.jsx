@@ -1,9 +1,19 @@
+import { useState } from 'react'
 import './App.css'
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
 import SummaryCard from './components/SummaryCard'
+import TransactionForm from './components/TransactionForm'
 
 function App() {
+  const [transactions, setTransactions] = useState([])
+  function addTransaction(transaction) {
+  setTransactions((currentTransactions) => [
+    ...currentTransactions,
+    transaction,
+  ])
+}
+
   return (
     <div className="app">
       <Sidebar />
@@ -37,6 +47,8 @@ function App() {
             amount="36%"
           />
         </section>
+        
+        <TransactionForm onAddTransaction={addTransaction} />
       </main>
     </div>
   )
