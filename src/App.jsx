@@ -4,6 +4,7 @@ import Sidebar from './components/Sidebar'
 import Header from './components/Header'
 import SummaryCard from './components/SummaryCard'
 import TransactionForm from './components/TransactionForm'
+import TransactionList from './components/TransactionList'
 
 function App() {
   const [transactions, setTransactions] = useState([])
@@ -12,6 +13,14 @@ function App() {
     ...currentTransactions,
     transaction,
   ])
+}
+
+function deleteTransaction(transactionId) {
+  setTransactions((currentTransactions) =>
+    currentTransactions.filter(
+      (transaction) => transaction.id !== transactionId
+    )
+  )
 }
 
   return (
@@ -49,6 +58,12 @@ function App() {
         </section>
         
         <TransactionForm onAddTransaction={addTransaction} />
+
+        <TransactionList
+  transactions={transactions}
+  onDeleteTransaction={deleteTransaction}
+/>
+
       </main>
     </div>
   )
