@@ -1,4 +1,23 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+
+const expenseCategories = [
+  'Food',
+  'Transport',
+  'Shopping',
+  'Entertainment',
+  'Bills',
+  'Health',
+  'Education',
+  'Other',
+]
+
+const incomeCategories = [
+  'Salary',
+  'Freelance',
+  'Business',
+  'Investment',
+  'Other',
+]
 
 function TransactionForm({ onAddTransaction }) {
   const [type, setType] = useState('expense')
@@ -6,6 +25,10 @@ function TransactionForm({ onAddTransaction }) {
   const [category, setCategory] = useState('')
   const [description, setDescription] = useState('')
   const [date, setDate] = useState('')
+
+  useEffect(() => {
+  setCategory('')
+}, [type])
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -61,15 +84,23 @@ function TransactionForm({ onAddTransaction }) {
         </div>
 
         <div className="form-group">
-          <label>Category</label>
+  <label>Category</label>
 
-          <input
-            type="text"
-            placeholder="e.g. Food, Salary"
-            value={category}
-            onChange={(event) => setCategory(event.target.value)}
-          />
-        </div>
+  <select
+    value={category}
+    onChange={(event) => setCategory(event.target.value)}
+  >
+    <option value="">Select category</option>
+
+    {(type === 'expense' ? expenseCategories : incomeCategories).map(
+      (categoryOption) => (
+        <option key={categoryOption} value={categoryOption}>
+          {categoryOption}
+        </option>
+      )
+    )}
+  </select>
+</div>
 
         <div className="form-group">
           <label>Description</label>
