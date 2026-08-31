@@ -8,6 +8,13 @@ import TransactionList from './components/TransactionList'
 import BudgetManager from './components/BudgetManager'
 import { supabase } from './lib/supabase'
 
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+
+import Dashboard from './pages/Dashboard'
+import Transactions from './pages/Transactions'
+import Budgets from './pages/Budgets'
+import Categories from './pages/Categories'
+
 function App() {
   const [transactions, setTransactions] = useState([])
   const [budgets, setBudgets] = useState([])
@@ -141,54 +148,46 @@ async function deleteBudget(budgetId) {
 }
 
   return (
+  <BrowserRouter>
     <div className="app">
       <Sidebar />
 
       <main className="main-content">
-        <Header />
 
-        <section className="summary-grid">
-          <SummaryCard
-            title="Total Income"
-            amount="₹50,000"
-          />
-
-          <SummaryCard
-            title="Total Expenses"
-            amount="₹32,000"
-          />
-
-          <SummaryCard
-            title="Balance"
-            amount="₹18,000"
-          />
-
-          <SummaryCard
-            title="Savings"
-            amount="₹18,000"
-          />
-
-          <SummaryCard
-            title="Savings Rate"
-            amount="36%"
-          />
-        </section>
-        
-        <TransactionForm onAddTransaction={addTransaction} />
-
-        <TransactionList
-  transactions={transactions}
-  onDeleteTransaction={deleteTransaction}
+       <Routes>
+  <Route
+  path="/"
+  element={
+    <Dashboard
+      transactions={transactions}
+      budgets={budgets}
+      onAddTransaction={addTransaction}
+      onDeleteTransaction={deleteTransaction}
+      onAddBudget={addBudget}
+      onDeleteBudget={deleteBudget}
+    />
+  }
 />
 
-<BudgetManager
-  budgets={budgets}
-  onAddBudget={addBudget}
-  onDeleteBudget={deleteBudget}
-/>
+  <Route
+    path="/transactions"
+    element={<Transactions />}
+  />
+
+  <Route
+    path="/budgets"
+    element={<Budgets />}
+  />
+
+  <Route
+    path="/categories"
+    element={<Categories />}
+  />
+</Routes>
 
       </main>
-    </div>
+        </div>
+  </BrowserRouter>
   )
 }
 

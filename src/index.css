@@ -35,3 +35,15 @@ button {
 .summary-card h2 {
   font-size: 26px;
 }
+
+.page-heading {
+  margin-bottom: 32px;
+}
+
+.page-heading h1 {
+  margin-bottom: 8px;
+}
+
+.page-heading p {
+  margin: 0;
+}
