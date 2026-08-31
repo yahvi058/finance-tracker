@@ -184,3 +184,47 @@
 .delete-button:hover {
   background: #fecaca;
 }
+
+.budget-container {
+  background: white;
+  padding: 24px;
+  margin-top: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.budget-container h2 {
+  margin-bottom: 20px;
+}
+
+.budget-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.budget-form .add-button {
+  width: fit-content;
+}
+
+.budget-list {
+  margin-top: 25px;
+}
+
+.budget-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.budget-item:last-child {
+  border-bottom: none;
+}
+
+.budget-item p {
+  color: #6b7280;
+  font-size: 13px;
+  margin-top: 5px;
+}
