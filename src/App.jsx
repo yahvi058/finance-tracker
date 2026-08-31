@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import Sidebar from './components/Sidebar'
 import Header from './components/Header'
@@ -6,18 +6,68 @@ import SummaryCard from './components/SummaryCard'
 import TransactionForm from './components/TransactionForm'
 import TransactionList from './components/TransactionList'
 import BudgetManager from './components/BudgetManager'
+import { supabase } from './lib/supabase'
 
 function App() {
   const [transactions, setTransactions] = useState([])
   const [budgets, setBudgets] = useState([])
-  function addTransaction(transaction) {
+
+  async function loadTransactions() {
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('*')
+    .order('date', { ascending: false })
+
+  if (error) {
+    console.error('Error loading transactions:', error)
+    return
+  }
+
+  setTransactions(data)
+}
+
+  useEffect(() => {
+  loadTransactions()
+}, [])
+
+  async function addTransaction(transaction) {
+  const { data, error } = await supabase
+    .from('transactions')
+    .insert([
+      {
+        type: transaction.type,
+        amount: transaction.amount,
+        category: transaction.category,
+        description: transaction.description,
+        date: transaction.date,
+      },
+    ])
+    .select()
+
+  if (error) {
+    console.error('Error adding transaction:', error)
+    alert('Could not add transaction.')
+    return
+  }
+
   setTransactions((currentTransactions) => [
     ...currentTransactions,
-    transaction,
+    data[0],
   ])
 }
 
-function deleteTransaction(transactionId) {
+async function deleteTransaction(transactionId) {
+  const { error } = await supabase
+    .from('transactions')
+    .delete()
+    .eq('id', transactionId)
+
+  if (error) {
+    console.error('Error deleting transaction:', error)
+    alert('Could not delete transaction.')
+    return
+  }
+
   setTransactions((currentTransactions) =>
     currentTransactions.filter(
       (transaction) => transaction.id !== transactionId
