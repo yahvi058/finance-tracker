@@ -28,7 +28,27 @@ function App() {
 
   useEffect(() => {
   loadTransactions()
+  loadBudgets()
 }, [])
+
+async function loadBudgets() {
+  const { data, error } = await supabase
+    .from('budgets')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('Error loading budgets:', error)
+    return
+  }
+
+  setBudgets(
+    data.map((budget) => ({
+      ...budget,
+      limit: budget.amount,
+    }))
+  )
+}
 
   async function addTransaction(transaction) {
   const { data, error } = await supabase
@@ -75,14 +95,44 @@ async function deleteTransaction(transactionId) {
   )
 }
 
-function addBudget(budget) {
+async function addBudget(budget) {
+  const { data, error } = await supabase
+    .from('budgets')
+    .insert([
+      {
+        category: budget.category,
+        amount: budget.limit,
+      },
+    ])
+    .select()
+
+  if (error) {
+    console.error('Error adding budget:', error)
+    alert('Could not add budget.')
+    return
+  }
+
   setBudgets((currentBudgets) => [
     ...currentBudgets,
-    budget,
+    {
+      ...data[0],
+      limit: data[0].amount,
+    },
   ])
 }
 
-function deleteBudget(budgetId) {
+async function deleteBudget(budgetId) {
+  const { error } = await supabase
+    .from('budgets')
+    .delete()
+    .eq('id', budgetId)
+
+  if (error) {
+    console.error('Error deleting budget:', error)
+    alert('Could not delete budget.')
+    return
+  }
+
   setBudgets((currentBudgets) =>
     currentBudgets.filter(
       (budget) => budget.id !== budgetId
