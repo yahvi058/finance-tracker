@@ -80,6 +80,11 @@ function Dashboard({ transactions = [] }) {
     '#06b6d4',
   ]
 
+  const barColors = {
+    Income: '#10b981',
+    Expenses: '#ef4444',
+  }
+
   return (
     <>
       <div className="page-heading">
@@ -125,21 +130,31 @@ function Dashboard({ transactions = [] }) {
             <ResponsiveContainer width="100%" height={350}>
               <BarChart data={incomeExpenseData}>
                 <CartesianGrid strokeDasharray="3 3" />
+
                 <XAxis dataKey="name" />
+
                 <YAxis />
+
                 <Tooltip
                   formatter={(value) =>
                     `₹${Number(value).toLocaleString('en-IN')}`
                   }
                 />
+
                 <Legend />
 
                 <Bar
                   dataKey="amount"
                   name="Amount"
-                  fill="#6366f1"
                   radius={[8, 8, 0, 0]}
-                />
+                >
+                  {incomeExpenseData.map((entry) => (
+                    <Cell
+                      key={entry.name}
+                      fill={barColors[entry.name]}
+                    />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
