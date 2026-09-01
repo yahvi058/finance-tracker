@@ -1,33 +1,70 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
 function Sidebar() {
+  const [isOpen, setIsOpen] = useState(false)
+
+  const closeSidebar = () => {
+    setIsOpen(false)
+  }
+
   return (
-    <aside className="sidebar">
-      <h2>Finance Tracker</h2>
+    <>
+      <header className="mobile-header">
+        <h2>Finance Tracker</h2>
 
-      <nav>
-        <Link to="/">
-          <button>Dashboard</button>
-        </Link>
+        <button
+          className="mobile-menu-button"
+          onClick={() => setIsOpen(true)}
+          aria-label="Open navigation menu"
+        >
+          ☰
+        </button>
+      </header>
 
-        <Link to="/transactions">
-          <button>Transactions</button>
-        </Link>
+      {isOpen && (
+        <div
+          className="sidebar-overlay"
+          onClick={closeSidebar}
+        />
+      )}
 
-        <Link to="/budgets">
-          <button>Budgets</button>
-        </Link>
+      <aside className={`sidebar ${isOpen ? 'sidebar-open' : ''}`}>
+        <div className="sidebar-header">
+          <h2>Finance Tracker</h2>
 
-        <Link to="/categories">
-          <button>Categories</button>
-        </Link>
+          <button
+            className="sidebar-close-button"
+            onClick={closeSidebar}
+            aria-label="Close navigation menu"
+          >
+            ✕
+          </button>
+        </div>
 
-        <Link to="/monthly-summary">
-          <button>Monthly Summary</button>
-        </Link>
+        <nav>
+          <Link to="/" onClick={closeSidebar}>
+            <button>Dashboard</button>
+          </Link>
 
-      </nav>
-    </aside>
+          <Link to="/transactions" onClick={closeSidebar}>
+            <button>Transactions</button>
+          </Link>
+
+          <Link to="/budgets" onClick={closeSidebar}>
+            <button>Budgets</button>
+          </Link>
+
+          <Link to="/categories" onClick={closeSidebar}>
+            <button>Categories</button>
+          </Link>
+
+          <Link to="/monthly-summary" onClick={closeSidebar}>
+            <button>Monthly Summary</button>
+          </Link>
+        </nav>
+      </aside>
+    </>
   )
 }
 

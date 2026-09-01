@@ -715,11 +715,6 @@
     flex-direction: column;
   }
 
-  .sidebar {
-    width: 100%;
-    min-height: auto;
-    position: static;
-  }
 
   .sidebar h2 {
     text-align: center;
@@ -764,5 +759,128 @@
 
   .dashboard-chart-wrapper {
     min-width: 0;
+  }
+}
+
+/* Mobile navigation */
+.mobile-header {
+  display: none;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-close-button {
+  display: none;
+}
+
+.sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 16px 20px;
+    background: #1f2937;
+    color: white;
+  }
+
+  .mobile-header h2 {
+    margin: 0;
+    font-size: 20px;
+  }
+
+  .mobile-menu-button {
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 260px;
+    height: 100vh;
+    min-height: 100vh;
+    padding: 24px 16px;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+  }
+
+  .sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-header h2 {
+    margin: 0;
+    font-size: 20px;
+  }
+
+  .sidebar-close-button {
+    display: block;
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .sidebar nav {
+    margin-top: 30px;
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  .main-content {
+    width: 100%;
+    padding: 20px 16px;
+  }
+}
+
+.sidebar nav a {
+  white-space: nowrap;
+}
+
+.sidebar button {
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .sidebar nav a {
+    display: block;
+    width: 100%;
+  }
+
+  .sidebar nav a button {
+    display: block;
+    width: 100%;
+    white-space: nowrap;
   }
 }
