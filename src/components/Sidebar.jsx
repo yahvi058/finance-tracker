@@ -21,6 +21,11 @@ function Sidebar() {
         <Link to="/categories">
           <button>Categories</button>
         </Link>
+
+        <Link to="/monthly-summary">
+          <button>Monthly Summary</button>
+        </Link>
+
       </nav>
     </aside>
   )

@@ -1,34 +1,19 @@
 import { useEffect, useState } from 'react'
 
-const expenseCategories = [
-  'Food',
-  'Transport',
-  'Shopping',
-  'Entertainment',
-  'Bills',
-  'Health',
-  'Education',
-  'Other',
-]
-
-const incomeCategories = [
-  'Salary',
-  'Freelance',
-  'Business',
-  'Investment',
-  'Other',
-]
-
-function TransactionForm({ onAddTransaction }) {
+function TransactionForm({ onAddTransaction, categories = [] }) {
   const [type, setType] = useState('expense')
   const [amount, setAmount] = useState('')
   const [category, setCategory] = useState('')
   const [description, setDescription] = useState('')
   const [date, setDate] = useState('')
 
+  const availableCategories = categories.filter(
+    (categoryItem) => categoryItem.type === type
+  )
+
   useEffect(() => {
-  setCategory('')
-}, [type])
+    setCategory('')
+  }, [type])
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -39,7 +24,6 @@ function TransactionForm({ onAddTransaction }) {
     }
 
     const newTransaction = {
-      id: Date.now(),
       type,
       amount: Number(amount),
       category,
@@ -84,23 +68,24 @@ function TransactionForm({ onAddTransaction }) {
         </div>
 
         <div className="form-group">
-  <label>Category</label>
+          <label>Category</label>
 
-  <select
-    value={category}
-    onChange={(event) => setCategory(event.target.value)}
-  >
-    <option value="">Select category</option>
+          <select
+            value={category}
+            onChange={(event) => setCategory(event.target.value)}
+          >
+            <option value="">Select category</option>
 
-    {(type === 'expense' ? expenseCategories : incomeCategories).map(
-      (categoryOption) => (
-        <option key={categoryOption} value={categoryOption}>
-          {categoryOption}
-        </option>
-      )
-    )}
-  </select>
-</div>
+            {availableCategories.map((categoryItem) => (
+              <option
+                key={categoryItem.id}
+                value={categoryItem.name}
+              >
+                {categoryItem.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <div className="form-group">
           <label>Description</label>
