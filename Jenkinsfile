@@ -2,6 +2,11 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = 'yahvisingh/finance-tracker'
+        IMAGE_TAG = 'latest'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -11,36 +16,59 @@ pipeline {
 
         stage('Build React App') {
             steps {
-                sh '''
-                    docker run --rm \
-                      -v "$WORKSPACE:/app" \
-                      -w /app \
-                      node:22-alpine \
-                      sh -c "npm install && npm run build"
-                '''
+                withCredentials([
+                    string(credentialsId: 'supabase-url',
+                           variable: 'VITE_SUPABASE_URL'),
+                    string(credentialsId: 'supabase-key',
+                           variable: 'VITE_SUPABASE_KEY')
+                ]) {
+                    sh '''
+                        set +x
+                        docker run --rm \
+                          -v "$WORKSPACE:/app" \
+                          -w /app \
+                          -e VITE_SUPABASE_URL \
+                          -e VITE_SUPABASE_KEY \
+                          node:22-alpine \
+                          sh -c "npm install && npm run build"
+                    '''
+                }
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t finance-tracker:latest .'
+                withCredentials([
+                    string(credentialsId: 'supabase-url',
+                           variable: 'SUPABASE_URL'),
+                    string(credentialsId: 'supabase-key',
+                           variable: 'SUPABASE_KEY')
+                ]) {
+                    sh '''
+                        set +x
+                        docker build \
+                          --build-arg VITE_SUPABASE_URL="$SUPABASE_URL" \
+                          --build-arg VITE_SUPABASE_KEY="$SUPABASE_KEY" \
+                          -t "$IMAGE_NAME:$IMAGE_TAG" .
+                    '''
+                }
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'dockerhub-creds',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_TOKEN'
-                )]) {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_TOKEN'
+                    )
+                ]) {
                     sh '''
                         set +x
                         echo "$DOCKER_TOKEN" | docker login \
                           -u "$DOCKER_USER" --password-stdin
-                        docker tag finance-tracker:latest \
-                          yahvisingh/finance-tracker:latest
-                        docker push yahvisingh/finance-tracker:latest
+                        docker push "$IMAGE_NAME:$IMAGE_TAG"
                         docker logout
                     '''
                 }
@@ -49,14 +77,14 @@ pipeline {
 
         stage('Verify Image') {
             steps {
-                sh 'docker images yahvisingh/finance-tracker:latest'
+                sh 'docker images "$IMAGE_NAME:$IMAGE_TAG"'
             }
         }
     }
 
     post {
         success {
-            echo 'Finance Tracker image pushed successfully!'
+            echo 'Finance Tracker image built and pushed successfully!'
         }
         failure {
             echo 'Pipeline failed. Check Console Output.'
