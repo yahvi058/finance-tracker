@@ -8,7 +8,14 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
-RUN npm run build
+
+# Supabase configuration supplied by Jenkins at build time
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_KEY
+
+RUN test -n "$VITE_SUPABASE_URL" && \
+    test -n "$VITE_SUPABASE_KEY" && \
+    npm run build
 
 # Serve the production build with Nginx
 FROM nginx:alpine
