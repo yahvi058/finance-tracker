@@ -11,7 +11,7 @@ function Sidebar() {
   return (
     <>
       <header className="mobile-header">
-        <h2>Finance Tracker</h2>
+        <h2>FinTrack</h2>
 
         <button
           className="mobile-menu-button"
