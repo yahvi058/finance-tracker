@@ -2,6 +2,10 @@
 pipeline {
     agent any
 
+    options {
+        disableConcurrentBuilds()
+    }
+
     environment {
         IMAGE_NAME = 'yahvisingh/finance-tracker'
         IMAGE_TAG = 'latest'
@@ -9,19 +13,23 @@ pipeline {
 
     stages {
         stage('Checkout') {
-    steps {
-        checkout scm
-        stash name: 'k8s-manifests', includes: 'k8s/**'
-    }
-}
+            steps {
+                checkout scm
+                stash name: 'k8s-manifests', includes: 'k8s/**'
+            }
+        }
 
         stage('Build React App') {
             steps {
                 withCredentials([
-                    string(credentialsId: 'supabase-url',
-                           variable: 'VITE_SUPABASE_URL'),
-                    string(credentialsId: 'supabase-key',
-                           variable: 'VITE_SUPABASE_KEY')
+                    string(
+                        credentialsId: 'supabase-url',
+                        variable: 'VITE_SUPABASE_URL'
+                    ),
+                    string(
+                        credentialsId: 'supabase-key',
+                        variable: 'VITE_SUPABASE_KEY'
+                    )
                 ]) {
                     sh '''
                         set +x
@@ -40,10 +48,14 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 withCredentials([
-                    string(credentialsId: 'supabase-url',
-                           variable: 'SUPABASE_URL'),
-                    string(credentialsId: 'supabase-key',
-                           variable: 'SUPABASE_KEY')
+                    string(
+                        credentialsId: 'supabase-url',
+                        variable: 'SUPABASE_URL'
+                    ),
+                    string(
+                        credentialsId: 'supabase-key',
+                        variable: 'SUPABASE_KEY'
+                    )
                 ]) {
                     sh '''
                         set +x
@@ -76,42 +88,43 @@ pipeline {
             }
         }
 
-                stage('Deploy to Minikube') {
-    agent {
-        label 'windows-minikube'
-    }
-
-    steps {
-        unstash 'k8s-manifests'
-
-        powershell '''
-            $ErrorActionPreference = "Stop"
-
-            kubectl apply -f k8s/deployment.yaml
-            if ($LASTEXITCODE -ne 0) {
-                throw "Deployment manifest failed"
+        stage('Deploy to Minikube') {
+            agent {
+                label 'windows-minikube'
             }
 
-            kubectl apply -f k8s/service.yaml
-            if ($LASTEXITCODE -ne 0) {
-                throw "Service manifest failed"
-            }
+            steps {
+                unstash 'k8s-manifests'
 
-            kubectl rollout restart deployment/finance-tracker
-            if ($LASTEXITCODE -ne 0) {
-                throw "Rollout restart failed"
-            }
+                powershell '''
+                    $ErrorActionPreference = "Stop"
 
-            kubectl rollout status deployment/finance-tracker --timeout=180s
-            if ($LASTEXITCODE -ne 0) {
-                throw "Deployment rollout failed"
-            }
+                    kubectl apply -f k8s/deployment.yaml
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "Deployment manifest failed"
+                    }
 
-            kubectl get pods
-            kubectl get services
-        '''
-    }
-}
+                    kubectl apply -f k8s/service.yaml
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "Service manifest failed"
+                    }
+
+                    kubectl rollout restart deployment/finance-tracker
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "Rollout restart failed"
+                    }
+
+                    kubectl rollout status deployment/finance-tracker --timeout=180s
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "Deployment rollout failed"
+                    }
+
+                    kubectl get pods
+                    kubectl get services
+                '''
+            }
+        }
+
         stage('Verify Image') {
             steps {
                 sh 'docker images "$IMAGE_NAME:$IMAGE_TAG"'
@@ -121,7 +134,7 @@ pipeline {
 
     post {
         success {
-            echo 'Finance Tracker image built and pushed successfully!'
+            echo 'Finance Tracker image built, pushed, and deployed successfully!'
         }
         failure {
             echo 'Pipeline failed. Check Console Output.'
