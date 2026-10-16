@@ -9,10 +9,11 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
+    steps {
+        checkout scm
+        stash name: 'k8s-manifests', includes: 'k8s/**'
+    }
+}
 
         stage('Build React App') {
             steps {
@@ -81,7 +82,7 @@ pipeline {
             }
 
             steps {
-                checkout scm
+                unstash 'k8s-manifests'
 
                 powershell '''
                     $ErrorActionPreference = "Stop"
