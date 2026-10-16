@@ -75,6 +75,43 @@ pipeline {
             }
         }
 
+                stage('Deploy to Minikube') {
+            agent {
+                label 'windows-minikube'
+            }
+
+            steps {
+                checkout scm
+
+                powershell '''
+                    $ErrorActionPreference = "Stop"
+
+                    kubectl apply -f k8s/deployment.yaml
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "Deployment manifest failed"
+                    }
+
+                    kubectl apply -f k8s/service.yaml
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "Service manifest failed"
+                    }
+
+                    kubectl rollout restart deployment/finance-tracker
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "Rollout restart failed"
+                    }
+
+                    kubectl rollout status deployment/finance-tracker --timeout=180s
+                    if ($LASTEXITCODE -ne 0) {
+                        throw "Deployment rollout failed"
+                    }
+
+                    kubectl get pods
+                    kubectl get services
+                '''
+            }
+        }
+
         stage('Verify Image') {
             steps {
                 sh 'docker images "$IMAGE_NAME:$IMAGE_TAG"'
