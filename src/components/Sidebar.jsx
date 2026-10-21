@@ -31,7 +31,7 @@ function Sidebar() {
 
       <aside className={`sidebar ${isOpen ? 'sidebar-open' : ''}`}>
         <div className="sidebar-header">
-          <h2>FinTrack</h2>
+          <h2>Finance Tracker</h2>
 
           <button
             className="sidebar-close-button"
